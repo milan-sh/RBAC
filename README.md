@@ -22,7 +22,7 @@ Follow these steps to set up and run the project locally:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-repo/sbac-dashboard.git
+   git clone https://github.com/milan-sh/RBAC
    cd sbac-dashboard
 
 2. **Install Dependencies Ensure you have Node.js installed. Run:**
