@@ -1,106 +1,155 @@
 import React, {useState} from "react";
-import Title from "./Title";
-import UserAvatar from "./UserAvatar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
-import {
-  faUserPen,
-  faTrash,
-  faCircleDot,
-} from "@fortawesome/free-solid-svg-icons";
-import AddRoleForm from "./AddRoleForm";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteRole } from "../store/RoleSlice";
 import Button from "./Button";
-import SaveChangesAlert from "./SaveChangesAlert"
-import DeleteConfirm from "./DeleteConfirm"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import UserAvatar from "./UserAvatar";
+import Title from "./Title";
+import { faCheck, faCircleDot, faUserPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import AddRoleForm from "./AddRoleForm";
+import DeleteConfirm from "./DeleteConfirm";
+
 
 
 function Hero() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const roles = useSelector((state) => state.roles.roleData);
+  const dispatch = useDispatch();
 
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [roleToEdit, setRoleToEdit] = useState(null);
 
-  const handleFormSubmit = (data) => {
-    console.log("Form Data:", data);
-    handleCloseModal();
+  const handleDelete = (roleId) => {
+    setRoleToDelete(roleId);
+    setShowDeleteConfirm(true);
   };
+
+  const confirmDelete = () => {
+    if (roleToDelete) {
+      dispatch(deleteRole(roleToDelete));
+    }
+    setShowDeleteConfirm(false);
+    setRoleToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setRoleToDelete(null);
+  };
+
+  const openEditForm = (role) => {
+    setRoleToEdit(role);
+    setIsFormOpen(true);
+  };
+
+  const openAddForm = () => {
+    setRoleToEdit(null);
+    setIsFormOpen(true);
+  };
+
+  const closeFormWindow = () => {
+    setIsFormOpen(false);
+    setRoleToEdit(null);
+  };
+  console.log("roles", roles)
+
   return (
     <div className="bg-background p-4">
-      <div className="rounded-md p-1">
-        <div className="bg-card border-b-2 rounded-t-md border-border p-4 grid grid-cols-6 gap-x-4 font-poppins">
+      <div className="mb-4">
+      </div>
+      <div className="rounded-md p-1 overflow-auto">
+        <div className="bg-card border-b-2 min-w-[750px] justify-items-center md:text-base text-sm rounded-t-md border-border p-4 grid grid-cols-6 gap-x-4 font-poppins">
           <Title>Account</Title>
           <Title>Email Address</Title>
           <Title>Role</Title>
-          <Title>Permission</Title>
+          <Title>Permissions</Title>
           <Title>Status</Title>
           <Title>Action</Title>
         </div>
-        <div className="bg-card border-b-2 grid grid-cols-6 p-4 gap-x-4 font-roboto">
-          <div className="flex justify-start items-center gap-2">
-            <UserAvatar size="lg" />
-            <h4 className="text-textPrimary  text-base">Milan Singh</h4>
-          </div>
-          <p className="text-primary text-base underline flex items-center">
-            <a href="">milan083821@gmail.com</a>
-          </p>
-          <div className="flex items-center">
-            <p className=" text-textPrimary">Super Admin</p>
-          </div>
-          <div className="flex justify-start items-center gap-x-4 text-sm">
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={faCheck} />
-              <p className="ml-1">Read</p>
+        {roles.length > 0 ? (
+          roles.map((role) => (
+            <div
+              key={role.id}
+              className="bg-card min-w-[750px] justify-items-center border-b-2 grid grid-cols-6 p-4 gap-x-4 font-roboto md:text-base text-sm"
+            >
+              <div className="flex justify-start items-center gap-2">
+                <UserAvatar size="lg" />
+                <h4 className="text-textPrimary text-base">{role.name}</h4>
+              </div>
+              <p className="text-primary text-base underline flex items-center">
+                {role.email}
+              </p>
+              <div className="flex items-center">
+                <p className="text-textPrimary">
+                  {role.role.replace("-", " ")}
+                </p>
+              </div>
+              <div className="flex justify-start items-center gap-x-4 text-sm">
+                {Object.entries(role.permissions || {})
+                  .filter(([, value]) => value)
+                  .map(([key]) => (
+                    <div key={key} className="flex items-center">
+                      <FontAwesomeIcon icon={faCheck} />
+                      <p className="ml-1">{key}</p>
+                    </div>
+                  ))}
+              </div>
+              <div className="flex items-center justify-start gap-2">
+                <FontAwesomeIcon
+                  className={
+                    role.status === "active" ? "text-success" : "text-error"
+                  }
+                  size="xs"
+                  icon={faCircleDot}
+                />
+                <p className="text-base text-textPrimary">
+                  {role.status === "active" ? "Active" : "Inactive"}
+                </p>
+              </div>
+              <div className="flex items-center justify-start gap-x-2">
+                <Button
+                  className="border-0 px-0"
+                  onClick={() => openEditForm(role)}
+                >
+                  <FontAwesomeIcon
+                    className="hover:cursor-pointer"
+                    size="lg"
+                    icon={faUserPen}
+                  />
+                </Button>
+                <Button
+                  className="border-0 px-0"
+                  onClick={() => handleDelete(role.id)}
+                >
+                  <FontAwesomeIcon
+                    className="hover:cursor-pointer text-error"
+                    icon={faTrash}
+                    size="lg"
+                  />
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={faCheck} />
-              <p className="ml-1">Write</p>
-            </div>
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={faXmark} />
-              <p className="ml-1">Delete</p>
-            </div>
+          ))
+        ) : (
+          <div className="bg-card text-center p-4">
+            <Title className="text-center m-auto">No roles found...</Title>
           </div>
-          <div className="flex items-center justify-start gap-2">
-            <FontAwesomeIcon
-              className="text-success"
-              size="xs"
-              icon={faCircleDot}
-            />
-            <p className="text-base text-textPrimary ">Active</p>
-          </div>
-          <div className="flex items-center justify-start gap-x-8">
-            <Button className="border-0 px-0">
-              <FontAwesomeIcon
-                className="hover:cursor-pointer"
-                size="lg"
-                icon={faUserPen}
-                onClick={handleOpenModal}
-              />
-            </Button>
-            <Button className="border-0 px-0">
-              <FontAwesomeIcon
-                className="hover:cursor-pointer text-error"
-                icon={faTrash}
-                size="lg"
-              />
-            </Button>
-            <Button className="border-0 px-0">
-              <FontAwesomeIcon
-                icon={faEye}
-                size="lg"
-                className="hover:cursor-pointer text-primary"
-              />
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
-      <AddRoleForm
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleFormSubmit}
-      />
-      <SaveChangesAlert/>
-      <DeleteConfirm/>
+
+      {isFormOpen && (
+        <AddRoleForm
+          roleIdData={roleToEdit}
+          closeFormWindow={closeFormWindow}
+          mode="edit"
+        />
+      )}
+      {console.log("role to edit",roleToEdit)}
+
+      {showDeleteConfirm && (
+        <DeleteConfirm onConfirm={confirmDelete} onCancel={cancelDelete} />
+      )}
     </div>
   );
 }

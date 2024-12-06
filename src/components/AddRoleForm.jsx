@@ -5,23 +5,43 @@ import Input from "./Input";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { addData, updateRole } from "../store/RoleSlice";
 
-function AddRoleForm() {
+function AddRoleForm({ closeFormWindow, mode = "add", roleIdData }) {
   const [showForm, setShowForm] = useState(true);
+  const [customPermissions, setCustomPermissions] = useState(
+    roleIdData?.permissions?.custom || []
+  );
+  const [newPermission, setNewPermission] = useState(null);
+  const dispatch = useDispatch();
+
   const closeForm = () => {
     setShowForm(false);
+    closeFormWindow();
   };
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const [customPermissions, setCustomPermissions] = useState([]);
-  const [newPermission, setNewPermission] = useState("");
+  } = useForm({
+    defaultValues: {
+      name: roleIdData?.name || "",
+      email: roleIdData?.email || "",
+      role: roleIdData?.role || "",
+      status: roleIdData?.status || "",
+      permissions: {
+        read: roleIdData?.permissions?.read || false,
+        write: roleIdData?.permissions?.write || false,
+        delete: roleIdData?.permissions?.delete || false,
+      },
+    },
+  });
 
   // Add Custom Permission
   const handleAddCustomPermission = () => {
-    if (newPermission.trim() && !customPermissions.includes(newPermission)) {
+    if (newPermission.trim().length>0 && !customPermissions.includes(newPermission)) {
       setCustomPermissions([...customPermissions, newPermission]);
       setNewPermission("");
     }
@@ -35,14 +55,39 @@ function AddRoleForm() {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
+    console.log("data", data);
+  
+    if (mode === "add") {
+      const payload = {
+        ...data, // New data (name, email, role, status, permissions)
+        permissions: { ...data.permissions, custom: customPermissions },
+      };
+      dispatch(addData(payload));
+    } else if (mode === "edit") {
+      if (!roleIdData || !roleIdData.id) {
+        console.error("Error: Role ID is required for edit mode.");
+        return;
+      }
+  
+      const payload = {
+        id: roleIdData.id, // Role to update
+        updatedData: {
+          ...data, // Updated data
+          permissions: { ...data.permissions, custom: customPermissions },
+        },
+      };
+      dispatch(updateRole(payload)); // Update role data
+    }
+  
+    closeForm();
   };
+  
 
   if (!showForm) return null;
 
   return (
-    <div className="min-h-full z-10 w-screen fixed m-auto top-0 left-0 backdrop-blur-sm bg-transparent flex justify-center items-center">
-      <div className="md:w-3/4 relative bg-card p-4 rounded-lg flex justify-center flex-col items-start gap-y-5">
+    <div className="min-h-full z-10 w-screen fixed top-0 left-0 backdrop-blur-sm bg-transparent flex justify-center items-center">
+      <div className="md:w-3/4 w-[90%] relative bg-card md:p-6 p-2 rounded-lg">
         <Button onClick={closeForm}>
           <FontAwesomeIcon
             className="absolute right-4 top-2 hover:cursor-pointer text-textPrimary"
@@ -50,23 +95,25 @@ function AddRoleForm() {
             icon={faXmark}
           />
         </Button>
-        <Title className="text-xl font-poppins">Add New Role</Title>
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-          <div className="grid md:grid-cols-2 grid-cols-1 gap-3">
-            <div className="flex  flex-col">
+        <Title className="text-xl font-poppins">
+          {mode === "add" ? "Add New Role" : "Edit Role"}
+        </Title>
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+            <div className="space-y-4">
               <Input
                 label="Name:"
                 type="text"
-                className="border border-border rounded-md p-2 w-full"
+                className="w-full border rounded-md p-2 border-border"
                 {...register("name", { required: "Name is required" })}
               />
               {errors.name && (
-                <p className="text-red-500 text-sm ">{errors.name.message}</p>
+                <p className="text-red-500 text-sm">{errors.name.message}</p>
               )}
               <Input
                 label="Email:"
                 type="email"
-                className="border border-border rounded-md p-2 w-full"
+                className="w-full border rounded-md p-2 border-border"
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -78,10 +125,8 @@ function AddRoleForm() {
               {errors.email && (
                 <p className="text-red-500 text-sm">{errors.email.message}</p>
               )}
-              <div className="flex flex-col w-full">
-                <label className="outline-none text-textPrimary bg-inherit">
-                  Role:
-                </label>
+              <div>
+                <label className="block text-sm font-medium">Role:</label>
                 <select
                   className="border border-border rounded-md p-2 w-full outline-none"
                   {...register("role", { required: "Role is required" })}
@@ -96,57 +141,45 @@ function AddRoleForm() {
                 )}
               </div>
             </div>
-            <div className="flex  flex-col">
-              <div className="flex flex-col gap-y-5">
-                {/* Permissions Checkboxes */}
-                <div className="flex flex-col ">
-                  <label className="outline-none text-textPrimary bg-inherit">
-                    Permissions:
+            <div className="space-y-4">
+              <div className="md:mb-9">
+                <label className="block text-sm font-medium mb-2">
+                  Permissions:
+                </label>
+                <div className="flex gap-x-4">
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" {...register("permissions.read")} />
+                    Read
                   </label>
-                  <div className="flex gap-x-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        {...register("permissions.read")}
-                      />
-                      Read
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        {...register("permissions.write")}
-                      />
-                      Write
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        {...register("permissions.delete")}
-                      />
-                      Delete
-                    </label>
-                  </div>
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" {...register("permissions.write")} />
+                    Write
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" {...register("permissions.delete")} />
+                    Delete
+                  </label>
                 </div>
               </div>
-              <div className="flex flex-col">
-                <label className="outline-none text-textPrimary bg-inherit md:mt-5">
-                  Add New Permissions:
+              <div>
+                <label className="block text-sm font-medium">
+                  Add Custom Permissions:
                 </label>
-                <div className="flex gap-x-2">
+                <div className="flex gap-2">
                   <Input
                     type="text"
-                    className="border border-border rounded-md p-2 w-full"
                     value={newPermission}
+                    className="w-full border rounded-md p-2 border-border"
                     onChange={(e) => setNewPermission(e.target.value)}
                   />
                   <Button
-                    className="bg-primary text-white rounded-md hover:bg-secondary px-2 py-1 h-fit"
+                    className="bg-primary text-white rounded-md px-2 py-1"
                     onClick={handleAddCustomPermission}
                   >
                     Add
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mt-2">
                   {customPermissions.map((permission, index) => (
                     <div
                       key={index}
@@ -164,10 +197,8 @@ function AddRoleForm() {
                   ))}
                 </div>
               </div>
-              <div className="flex flex-col">
-                <label className="outline-none text-textPrimary bg-inherit">
-                  Status:
-                </label>
+              <div>
+                <label className="block text-sm font-medium">Status:</label>
                 <select
                   className="border border-border rounded-md p-2 w-full outline-none"
                   {...register("status", { required: "Status is required" })}
@@ -184,15 +215,18 @@ function AddRoleForm() {
               </div>
             </div>
           </div>
-          <div className="flex gap-x-8 mt-4 justify-end">
-            <Button className="bg-error text-white rounded-md px-5 py-2">
+          <div className="flex justify-end gap-4">
+            <Button
+              className="bg-error text-white rounded-md"
+              onClick={closeFormWindow}
+            >
               Cancel
             </Button>
             <Button
-              className="bg-primary text-white rounded-md px-5 py-2"
+              className="bg-primary text-white rounded-md"
               type="submit"
             >
-              Create
+              {mode === "add" ? "Create" : "Update"}
             </Button>
           </div>
         </form>
