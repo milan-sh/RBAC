@@ -7,9 +7,24 @@ const initialState = {
       name: "test1",
       email: "test1@gmail.com", 
       role: "admin",
+      permissions: {read:true, write:true, delete: false},
+      status: "active",
+    },
+    {
+      id: 2,
+      name: "test2",
+      email: "test2@gmail.com", 
+      role: "super admin",
       permissions: {read:true, write:true, delete: true},
       status: "active",
-      // actions: []
+    },
+    {
+      id: 3,
+      name: "test3",
+      email: "test3@gmail.com", 
+      role: "super admin",
+      permissions: {read:true, write:false, delete: false},
+      status: "active",
     },
   ],    
 };
@@ -22,7 +37,7 @@ export const roleSlice = createSlice({
     addData: (state, action) => {
       const role = {
         id: nanoid(),
-        ...action.payload, // Expect payload to contain name, email, role, permission, status
+        ...action.payload, 
       };
       state.roleData.push(role);
     },
@@ -48,8 +63,8 @@ export const roleSlice = createSlice({
   },
 });
 
-// Export actions
+
 export const { addData, deleteRole, updateRole } = roleSlice.actions;
 
-// Export reducer
+
 export default roleSlice.reducer;

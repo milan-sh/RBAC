@@ -8,7 +8,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { addData, updateRole } from "../store/RoleSlice";
 
-function AddRoleForm({ closeFormWindow, mode = "add", roleIdData }) {
+function Form({ closeFormWindow, mode = "add", roleIdData }) {
   const [showForm, setShowForm] = useState(true);
   const [customPermissions, setCustomPermissions] = useState(
     roleIdData?.permissions?.custom || []
@@ -54,9 +54,7 @@ function AddRoleForm({ closeFormWindow, mode = "add", roleIdData }) {
     );
   };
 
-  const onSubmit = (data) => {
-    console.log("data", data);
-  
+  const onSubmit = (data) => {  
     if (mode === "add") {
       const payload = {
         ...data, // New data (name, email, role, status, permissions)
@@ -235,4 +233,4 @@ function AddRoleForm({ closeFormWindow, mode = "add", roleIdData }) {
   );
 }
 
-export default AddRoleForm;
+export default Form;

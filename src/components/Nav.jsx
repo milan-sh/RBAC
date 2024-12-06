@@ -9,12 +9,13 @@ import {
 import Input from "./Input";
 import UserAvatar from "./UserAvatar";
 import Button from "./Button";
-import AddRoleForm from "./AddRoleForm";
+import Form from "./Form";
 import { useSearch } from "../store/searchSlice";
 
 function Nav() {
   const [showForm, setShowForm] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [avatarBio, setAvatarBio] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -34,6 +35,9 @@ function Nav() {
     setSearchQuery(e.target.value);
   };
 
+  const handleAvatarBio = () => {
+    setAvatarBio((prev) => !prev);
+  };
 
   return (
     <nav className="bg-background flex items-center justify-between p-4 relative">
@@ -57,7 +61,10 @@ function Nav() {
           menuOpen ? "flex" : "hidden"
         } md:flex md:flex-row flex-col-reverse items-center justify-between gap-x-8 gap-y-2 absolute md:static top-0 left-0 w-full md:w-auto bg-background md:bg-transparent shadow-md md:shadow-none p-3 md:p-0 z-10`}
       >
-        <Button className="block md:hidden absolute right-0 top-2" onClick={toggleMenu}>
+        <Button
+          className="block md:hidden absolute right-0 top-2"
+          onClick={toggleMenu}
+        >
           <FontAwesomeIcon
             size="xl"
             className="text-textPrimary"
@@ -87,12 +94,21 @@ function Nav() {
           </Button>
 
           {/* User Avatar */}
-          <UserAvatar size="xl" />
+          <Button className="relative" onClick={handleAvatarBio}>
+            <UserAvatar size="xl" />
+          </Button>
+          {avatarBio && (
+            <div className="w-fit p-1 rounded-md flex flex-col items-center gap-y-2 absolute top-14 md:right-1 right-16 border border-primary bg-card">
+              <p>You</p>
+              <hr className="bg-background h-[2px] w-full" />
+              <Button className="bg-error text-card">Logout</Button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Add Role Form */}
-      {showForm && <AddRoleForm closeFormWindow={closeForm} mode="add" />}
+      {showForm && <Form closeFormWindow={closeForm} mode="add" />}
     </nav>
   );
 }

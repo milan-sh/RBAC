@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UserAvatar from "./UserAvatar";
 import Title from "./Title";
 import { faCheck, faCircleDot, faUserPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import AddRoleForm from "./AddRoleForm";
+import Form from "./Form";
 import DeleteConfirm from "./DeleteConfirm";
 import { useSearch } from "../store/searchSlice";
 
@@ -41,11 +41,6 @@ function Hero() {
 
   const openEditForm = (role) => {
     setRoleToEdit(role);
-    setIsFormOpen(true);
-  };
-
-  const openAddForm = () => {
-    setRoleToEdit(null);
     setIsFormOpen(true);
   };
 
@@ -146,13 +141,12 @@ function Hero() {
       </div>
 
       {isFormOpen && (
-        <AddRoleForm
+        <Form
           roleIdData={roleToEdit}
           closeFormWindow={closeFormWindow}
           mode="edit"
         />
       )}
-      {console.log("role to edit",roleToEdit)}
 
       {showDeleteConfirm && (
         <DeleteConfirm onConfirm={confirmDelete} onCancel={cancelDelete} />
