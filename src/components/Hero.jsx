@@ -8,6 +8,7 @@ import Title from "./Title";
 import { faCheck, faCircleDot, faUserPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import AddRoleForm from "./AddRoleForm";
 import DeleteConfirm from "./DeleteConfirm";
+import { useSearch } from "../store/searchSlice";
 
 
 
@@ -52,7 +53,13 @@ function Hero() {
     setIsFormOpen(false);
     setRoleToEdit(null);
   };
-  console.log("roles", roles)
+
+  const { searchQuery } = useSearch();
+  const filteredItems = searchQuery
+    ? roles.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : roles;
 
   return (
     <div className="bg-background p-4">
@@ -67,8 +74,8 @@ function Hero() {
           <Title>Status</Title>
           <Title>Action</Title>
         </div>
-        {roles.length > 0 ? (
-          roles.map((role) => (
+        {filteredItems.length > 0 ? (
+          filteredItems.map((role) => (
             <div
               key={role.id}
               className="bg-card min-w-[750px] justify-items-center border-b-2 grid grid-cols-6 p-4 gap-x-4 font-roboto md:text-base text-sm"

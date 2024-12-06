@@ -1,12 +1,15 @@
-import React from 'react'
-import { Hero, Nav } from "../components/index"
+import React from "react";
+import { Hero, Nav } from "../components/index";
+import { SearchProvider } from "../store/searchSlice";
 function Home() {
   return (
-    <div className='bg-background'>
-      <Nav/>
-      <Hero/>
-    </div>
-  )
+    <SearchProvider>
+      <div className="bg-background">
+        <Nav />
+        <Hero />
+      </div>
+    </SearchProvider>
+  );
 }
 
-export default Home
+export default Home;

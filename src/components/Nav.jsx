@@ -10,11 +10,11 @@ import Input from "./Input";
 import UserAvatar from "./UserAvatar";
 import Button from "./Button";
 import AddRoleForm from "./AddRoleForm";
+import { useSearch } from "../store/searchSlice";
 
-function Nav({ onSearch }) {
+function Nav() {
   const [showForm, setShowForm] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -29,11 +29,11 @@ function Nav({ onSearch }) {
     setShowForm(false);
   };
 
-  const handleSearchChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-    onSearch(query); // Call the search function passed via props
+  const { setSearchQuery } = useSearch();
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
   };
+
 
   return (
     <nav className="bg-background flex items-center justify-between p-4 relative">
@@ -68,8 +68,7 @@ function Nav({ onSearch }) {
         <div className="search rounded-full py-1 px-3 border border-border flex items-center gap-x-2 w-full md:w-auto">
           <Input
             className="rounded-full font-poppins flex-1"
-            value={searchQuery}
-            onChange={handleSearchChange} // Update query on change
+            onChange={handleSearch} // Update query on change
             placeholder="Search..."
           />
           <FontAwesomeIcon
