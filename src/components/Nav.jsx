@@ -72,7 +72,7 @@ function Nav() {
           />
         </Button>
         {/* Search */}
-        <div className="search rounded-full py-1 px-3 border border-border flex items-center gap-x-2 w-full md:w-auto">
+        <div className="search rounded-full py-1 px-3 border border-border flex items-center gap-x-2 w-[3/4] md:w-auto">
           <Input
             className="rounded-full font-poppins flex-1"
             onChange={handleSearch} // Update query on change

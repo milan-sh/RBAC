@@ -87,13 +87,13 @@ function Hero() {
                   {role.role.replace("-", " ")}
                 </p>
               </div>
-              <div className="flex justify-start items-center gap-x-4 text-sm">
+              <div className="flex justify-start items-center md:gap-x-4 text-sm">
                 {Object.entries(role.permissions || {})
                   .filter(([, value]) => value)
                   .map(([key]) => (
                     <div key={key} className="flex items-center">
                       <FontAwesomeIcon icon={faCheck} />
-                      <p className="ml-1">{key}</p>
+                      <p className="ml-[2px]">{key}</p>
                     </div>
                   ))}
               </div>
