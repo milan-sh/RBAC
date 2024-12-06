@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteRole } from "../store/RoleSlice";
+import { deleteRole } from "../store/roleSlice";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UserAvatar from "./UserAvatar";

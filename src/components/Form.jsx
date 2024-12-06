@@ -6,7 +6,7 @@ import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { addData, updateRole } from "../store/RoleSlice";
+import { addData, updateRole } from "../store/roleSlice";
 
 function Form({ closeFormWindow, mode = "add", roleIdData }) {
   const [showForm, setShowForm] = useState(true);
